@@ -17,67 +17,76 @@ const schema = z.object({
   }),
 });
 
-type ExpenseFormData = z.infer<typeof schema>;
+export type ExpenseFormData = z.infer<typeof schema>;
 
-const ExpenseForm = () => {
+interface Props {
+  onSubmit: (data: ExpenseFormData) => void;
+}
+
+const ExpenseForm = ({ onSubmit }: Props) => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<ExpenseFormData>({ resolver: zodResolver(schema) });
 
   return (
-    <form
-      onSubmit={handleSubmit((data) => {
-        console.log("data", data);
-      })}
-    >
-      <div className="mb-3">
-        <label htmlFor="description" className="form-label">
-          Description
-        </label>
-        <input
-          id="description"
-          type="text"
-          className="form-control"
-          {...register("description")}
-        />
-        {errors.description && (
-          <p className="text-danger">{errors.description.message}</p>
-        )}
-      </div>
-      <div className="mb-3">
-        <label htmlFor="amount" className="form-label">
-          Amount
-        </label>
-        <input
-          id="amount"
-          type="number"
-          className="form-control"
-          {...register("amount", { valueAsNumber: true })}
-        />
-        {errors.amount && (
-          <p className="text-danger">{errors.amount.message}</p>
-        )}
-      </div>
-      <div className="mb-3">
-        <label htmlFor="category" className="form-label">
-          Category
-        </label>
-        <select className="form-select" {...register("category")}>
-          <option value=""></option>
-          {categories.map((category) => (
-            <option key={category} value={category}>
-              {category}
-            </option>
-          ))}
-        </select>
-        {errors.category && (
-          <p className="text-danger">{errors.category.message}</p>
-        )}
-      </div>
-      <button className="btn btn-primary">Submit</button>
-    </form>
+    <>
+      <h2>Add Expense</h2>
+      <form
+        onSubmit={handleSubmit((data) => {
+          onSubmit(data);
+          reset();
+        })}
+      >
+        <div className="mb-3">
+          <label htmlFor="description" className="form-label">
+            Description
+          </label>
+          <input
+            id="description"
+            type="text"
+            className="form-control"
+            {...register("description")}
+          />
+          {errors.description && (
+            <p className="text-danger">{errors.description.message}</p>
+          )}
+        </div>
+        <div className="mb-3">
+          <label htmlFor="amount" className="form-label">
+            Amount
+          </label>
+          <input
+            id="amount"
+            type="number"
+            className="form-control"
+            {...register("amount", { valueAsNumber: true })}
+          />
+          {errors.amount && (
+            <p className="text-danger">{errors.amount.message}</p>
+          )}
+        </div>
+        <div className="mb-3">
+          <label htmlFor="category" className="form-label">
+            Category
+          </label>
+          <select className="form-select" {...register("category")}>
+            <option value=""></option>
+            {categories.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
+          {errors.category && (
+            <p className="text-danger">{errors.category.message}</p>
+          )}
+        </div>
+        <button className="btn btn-primary">Submit</button>
+      </form>
+    </>
   );
 };
 
